@@ -311,8 +311,8 @@ class CornersProblem(search.SearchProblem):
         # in initializing the problem
         "*** YOUR CODE HERE ***"
 
-        # self.gameState = startingGameState
-        # self.heuristicInfo = dict()
+        self.gameState = startingGameState
+        self.heuristicInfo = dict()
 
     def getStartState(self):
         """
@@ -415,8 +415,30 @@ def cornersHeuristic(state, problem):
     walls = problem.walls
 
     "*** YOUR CODE HERE ***"
+    location = state[0]
+    cornersIndexes = state[1]
+    if not cornersIndexes:
+        return 0
+    remainedCorners = []
+    for idx in cornersIndexes:
+        remainedCorners.append(corners[idx])
 
-    return 0  # Default to trivial solution
+    distanceList = []
+    # Get all corner's maze distance from current position
+    for corner in remainedCorners:
+        # For efficiency, pacman may walk though an old state
+        key = location + corner
+        if key in problem.heuristicInfo.keys():
+            distance = problem.heuristicInfo[key]
+        else:
+            distance = mazeDistance(location, corner, problem.gameState)
+            problem.heuristicInfo[key] = distance
+        distanceList.append(distance)
+
+    # Return max corner distance as heuristic
+    return max(distanceList)
+
+    # return 0  # Default to trivial solution
 
 
 class AStarCornersAgent(SearchAgent):
