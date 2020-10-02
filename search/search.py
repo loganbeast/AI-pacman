@@ -81,12 +81,46 @@ def depthFirstSearch(problem):
 
     To get started, you might want to try some of these simple commands to
     understand the search problem that is being passed in:
-
-    print "Start:", problem.getStartState()
-    print "Is the start a goal?", problem.isGoalState(problem.getStartState())
-    print "Start's successors:", problem.getSuccessors(problem.getStartState())
     """
+
+    # print "Start:", problem.getStartState()
+    # print "Is the start a goal?", problem.isGoalState(problem.getStartState())
+    # print "Start's successors:", problem.getSuccessors(problem.getStartState())
+    
+    # Box = util.Stack()
+    # Box.push((problem.getStartState(), [], []))
+    # while not Box.isEmpty():
+    #     node, actions, visited = Box.pop()
+    #     if (problem.isGoalState(node)):
+    #         print "ACTION" , actions
+    #         return actions
+            
+    #     for child, direction, steps in problem.getSuccessors(node):
+    #         if not child in visited:
+    #             Box.push((child, actions + [direction], visited + [node]))
+    #             print actions + [direction]
+    # return []
+    
+    fringe = util.Stack()
+    fringe.push((problem.getStartState(),[]))
+    visited =list() 
+    while not fringe.isEmpty():
+        curr_state, actions = fringe.pop()
+        visited.append(curr_state)
+        if(problem.isGoalState(curr_state)) : 
+            # print "Actions" , actions
+            return actions
+        for next_state, action, cost in problem.getSuccessors(curr_state):
+            # print next_state,action
+            if(next_state not in visited): 
+                fringe.push((next_state,actions +[action]))
+                # print actions + [action]
+    return []
+
+
+
     "*** YOUR CODE HERE ***"
+    
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
