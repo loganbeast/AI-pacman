@@ -86,21 +86,9 @@ def depthFirstSearch(problem):
     # print "Start:", problem.getStartState()
     # print "Is the start a goal?", problem.isGoalState(problem.getStartState())
     # print "Start's successors:", problem.getSuccessors(problem.getStartState())
-    
-    # Box = util.Stack()
-    # Box.push((problem.getStartState(), [], []))
-    # while not Box.isEmpty():
-    #     node, actions, visited = Box.pop()
-    #     if (problem.isGoalState(node)):
-    #         print "ACTION" , actions
-    #         return actions
-            
-    #     for child, direction, steps in problem.getSuccessors(node):
-    #         if not child in visited:
-    #             Box.push((child, actions + [direction], visited + [node]))
-    #             print actions + [direction]
-    # return []
-    
+
+    "*** YOUR CODE HERE ***"
+      
     fringe = util.Stack()
     fringe.push((problem.getStartState(),[]))
     visited =list() 
@@ -117,15 +105,27 @@ def depthFirstSearch(problem):
                 # print actions + [action]
     return []
 
-
-
-    "*** YOUR CODE HERE ***"
-    
     util.raiseNotDefined()
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
+    fringe = util.Queue()
+    fringe.push((problem.getStartState(),[]))
+    visited =list()
+    while not fringe.isEmpty():
+        curr_state, actions =fringe.pop()
+        visited.append(curr_state)
+        if(problem.isGoalState(curr_state)):
+            # print "Action0" , actions
+            return actions
+        for next_state, action,cost in problem.getSuccessors(curr_state):
+            if(next_state not in visited):
+                # fail here
+                visited.append(next_state)
+                fringe.push((next_state,actions +[action]))
+                # print actions + [action]        
+    return []
     util.raiseNotDefined()
 
 def uniformCostSearch(problem):
