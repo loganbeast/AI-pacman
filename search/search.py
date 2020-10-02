@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -18,6 +18,7 @@ Pacman agents (in searchAgents.py).
 """
 
 import util
+
 
 class SearchProblem:
     """
@@ -70,7 +71,8 @@ def tinyMazeSearch(problem):
     from game import Directions
     s = Directions.SOUTH
     w = Directions.WEST
-    return  [s, s, w, s, w, w, s, w]
+    return [s, s, w, s, w, w, s, w]
+
 
 def depthFirstSearch(problem):
     """
@@ -88,51 +90,53 @@ def depthFirstSearch(problem):
     # print "Start's successors:", problem.getSuccessors(problem.getStartState())
 
     "*** YOUR CODE HERE ***"
-      
+
     fringe = util.Stack()
-    fringe.push((problem.getStartState(),[]))
-    visited =list() 
+    fringe.push((problem.getStartState(), []))
+    visited = list()
     while not fringe.isEmpty():
         curr_state, actions = fringe.pop()
         visited.append(curr_state)
-        if(problem.isGoalState(curr_state)) : 
+        if(problem.isGoalState(curr_state)):
             # print "Actions" , actions
             return actions
         for next_state, action, cost in problem.getSuccessors(curr_state):
             # print next_state,action
-            if(next_state not in visited): 
-                fringe.push((next_state,actions +[action]))
+            if(next_state not in visited):
+                fringe.push((next_state, actions + [action]))
                 # print actions + [action]
     return []
 
     util.raiseNotDefined()
 
+
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
     "*** YOUR CODE HERE ***"
     fringe = util.Queue()
-    fringe.push((problem.getStartState(),[]))
-    visited =list()
+    fringe.push((problem.getStartState(), []))
+    visited = list()
     while not fringe.isEmpty():
-        curr_state, actions =fringe.pop()
+        curr_state, actions = fringe.pop()
         visited.append(curr_state)
         if(problem.isGoalState(curr_state)):
             # print "Action0" , actions
             return actions
-        for next_state, action,cost in problem.getSuccessors(curr_state):
+        for next_state, action, cost in problem.getSuccessors(curr_state):
             if(next_state not in visited):
                 # fail here
                 visited.append(next_state)
-                fringe.push((next_state,actions +[action]))
-                # print actions + [action]        
+                fringe.push((next_state, actions + [action]))
+                # print actions + [action]
     return []
     util.raiseNotDefined()
+
 
 def uniformCostSearch(problem):
     """Search the node of least total cost first."""
     "*** YOUR CODE HERE ***"
     fringe = util.PriorityQueue()
-    fringe.push((problem.getStartState(),[],0),0)
+    fringe.push((problem.getStartState(), [], 0), 0)
     visited = list()
     while not fringe.isEmpty():
         # node[0] is location, while node[1] is path, while node[2] is cumulative cost
@@ -140,20 +144,22 @@ def uniformCostSearch(problem):
         curr_state = node[0]
         actions = node[1]
         costs = node[2]
-        if(problem.isGoalState(curr_state)) : return actions
+        if(problem.isGoalState(curr_state)):
+            return actions
 
         if curr_state not in visited:
             visited.append(curr_state)
-            for next_state,action,cost in problem.getSuccessors(curr_state):
+            for next_state, action, cost in problem.getSuccessors(curr_state):
                 if (next_state not in visited):
                     total_cost = costs + cost
                     # print total_cost
-                    fringe.push((next_state,actions +[action],total_cost),total_cost)  
+                    fringe.push(
+                        (next_state, actions + [action], total_cost), total_cost)
                     # print actions +[action]
     return None
 
-
     util.raiseNotDefined()
+
 
 def nullHeuristic(state, problem=None):
     """
@@ -162,9 +168,34 @@ def nullHeuristic(state, problem=None):
     """
     return 0
 
+
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
     "*** YOUR CODE HERE ***"
+    fringe = util.PriorityQueue()
+    fringe.push((problem.getStartState(), [], 0), 0)
+    visited = list()
+    while not fringe.isEmpty():
+        # node[0] is location, while node[1] is path, while node[2] is cumulative cost
+        node = fringe.pop()
+        curr_state = node[0]
+        actions = node[1]
+        costs = node[2]
+        if(problem.isGoalState(curr_state)):
+            return actions
+
+        if curr_state not in visited:
+            visited.append(curr_state)
+            for next_state, action, cost in problem.getSuccessors(curr_state):
+                if (next_state not in visited):
+                    total_cost = costs + cost + heuristic(next_state, problem)
+                    # print total_cost
+                    # err here 2 total cost => costs + cost , total_cost
+                    fringe.push(
+                        (next_state, actions + [action], costs + cost), total_cost)
+                    # print actions +[action]
+    return None
+
     util.raiseNotDefined()
 
 
