@@ -361,7 +361,7 @@ class CornersProblem(search.SearchProblem):
             hit_wall = self.walls[nextX][nextY]
             if not hit_wall:
                 # thay doi remainedCorner neu reach corners
-                remainedCorners = state[1]
+                remainedCorners = state[1]  # (0,1,2,3)
                 nextLocation = (nextX, nextY)
                 try:
                     # check xem successor co phai la corner hay khong
@@ -374,7 +374,6 @@ class CornersProblem(search.SearchProblem):
                         temp = list(remainedCorners)
                         temp.remove(idx)
                         remainedCorners = tuple(temp)
-
                 nextState = (nextLocation, remainedCorners)
                 successors.append((nextState, action, 1))
 
@@ -428,13 +427,14 @@ def cornersHeuristic(state, problem):
     for corner in remainedCorners:
         # For efficiency, pacman may walk though an old state
         key = location + corner
+        # print key
         if key in problem.heuristicInfo.keys():
             distance = problem.heuristicInfo[key]
         else:
             distance = mazeDistance(location, corner, problem.gameState)
             problem.heuristicInfo[key] = distance
-        distanceList.append(distance)
 
+        distanceList.append(distance)
     # Return max corner distance as heuristic
     return max(distanceList)
 
@@ -653,6 +653,8 @@ def mazeDistance(point1, point2, gameState):
     walls = gameState.getWalls()
     assert not walls[x1][y1], 'point1 is a wall: ' + str(point1)
     assert not walls[x2][y2], 'point2 is a wall: ' + str(point2)
+
     prob = PositionSearchProblem(
         gameState, start=point1, goal=point2, warn=False, visualize=False)
+    # print len(search.bfs(prob))
     return len(search.bfs(prob))
