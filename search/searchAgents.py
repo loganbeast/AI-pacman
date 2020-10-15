@@ -423,6 +423,7 @@ def cornersHeuristic(state, problem):
         remainedCorners.append(corners[idx])
 
     distanceList = []
+    # print remainedCorners
     # Get all corner's maze distance from current position
     for corner in remainedCorners:
         # For efficiency, pacman may walk though an old state
