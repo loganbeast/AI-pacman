@@ -82,20 +82,17 @@ class ReflexAgent(Agent):
             ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-
+        #
         newFood = successorGameState.getFood().asList()
-        minFoodist = float("inf")
+        minFoodDist = float("inf")
         for food in newFood:
-            minFoodist = min(minFoodist, manhattanDistance(newPos, food))
+            minFoodDist = min(minFoodDist, manhattanDistance(newPos, food))
 
-        # avoid ghost if too close
+        # tranh ma o vi tri gan pacman
         for ghost in successorGameState.getGhostPositions():
             if (manhattanDistance(newPos, ghost) < 2):
                 return -float('inf')
-        # reciprocal
-
-        return successorGameState.getScore() + 1.0/minFoodist
-
+        return successorGameState.getScore() + 1.0/minFoodDist
         # return successorGameState.getScore()
 
 
@@ -138,22 +135,48 @@ class MinimaxAgent(MultiAgentSearchAgent):
 
     def getAction(self, gameState):
         """
-          Returns the minimax action from the current gameState using self.depth
-          and self.evaluationFunction.
+              Returns the minimax action from the current gameState using self.depth
+              and self.evaluationFunction.
 
-          Here are some method calls that might be useful when implementing minimax.
+              Here are some method calls that might be useful when implementing minimax.
 
-          gameState.getLegalActions(agentIndex):
-            Returns a list of legal actions for an agent
-            agentIndex=0 means Pacman, ghosts are >= 1
+              gameState.getLegalActions(agentIndex):
+                Returns a list of legal actions for an agent
+                agentIndex=0 means Pacman, ghosts are >= 1
 
-          gameState.generateSuccessor(agentIndex, action):
-            Returns the successor game state after an agent takes an action
+              gameState.generateSuccessor(agentIndex, action):
+                Returns the successor game state after an agent takes an action
 
-          gameState.getNumAgents():
-            Returns the total number of agents in the game
-        """
+              gameState.getNumAgents():
+                Returns the total number of agents in the game
+            """
         "*** YOUR CODE HERE ***"
+        return self.maxval(gameState, 0, 0)[0]
+
+    def minimax(self, gameState, agentIndex, depth):
+        if depth is self.depth * gameState.getNumAgents() \
+                or gameState.isLose() or gameState.isWin():
+            return self.evaluationFunction(gameState)
+        if agentIndex is 0:
+            return self.maxval(gameState, agentIndex, depth)[1]
+        else:
+            return self.minval(gameState, agentIndex, depth)[1]
+
+    def maxval(self, gameState, agentIndex, depth):
+        bestAction = ("max", -float("inf"))
+        for action in gameState.getLegalActions(agentIndex):
+            succAction = (action, self.minimax(gameState.generateSuccessor(agentIndex, action),
+                                               (depth + 1) % gameState.getNumAgents(), depth+1))
+            bestAction = max(bestAction, succAction, key=lambda x: x[1])
+        return bestAction
+
+    def minval(self, gameState, agentIndex, depth):
+        bestAction = ("min", float("inf"))
+        for action in gameState.getLegalActions(agentIndex):
+            succAction = (action, self.minimax(gameState.generateSuccessor(agentIndex, action),
+                                               (depth + 1) % gameState.getNumAgents(), depth+1))
+            bestAction = min(bestAction, succAction, key=lambda x: x[1])
+        return bestAction
         util.raiseNotDefined()
 
 
