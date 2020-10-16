@@ -82,7 +82,7 @@ class ReflexAgent(Agent):
             ghostState.scaredTimer for ghostState in newGhostStates]
 
         "*** YOUR CODE HERE ***"
-        #
+        # tim khoang cach mahatan nho nhat cua pacman va thuc an
         newFood = successorGameState.getFood().asList()
         minFoodDist = float("inf")
         for food in newFood:
@@ -190,6 +190,46 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
           Returns the minimax action using self.depth and self.evaluationFunction
         """
         "*** YOUR CODE HERE ***"
+        return self.maxval(gameState, 0, 0, -float("inf"), float("inf"))[0]
+
+    def alphabeta(self, gameState, agentIndex, depth, alpha, beta):
+        if depth is self.depth * gameState.getNumAgents() \
+                or gameState.isLose() or gameState.isWin():
+            return self.evaluationFunction(gameState)
+        if agentIndex is 0:
+            return self.maxval(gameState, agentIndex, depth, alpha, beta)[1]
+        else:
+            return self.minval(gameState, agentIndex, depth, alpha, beta)[1]
+
+    def maxval(self, gameState, agentIndex, depth, alpha, beta):
+        bestAction = ("max", -float("inf"))
+        for action in gameState.getLegalActions(agentIndex):
+            succAction = (action, self.alphabeta(gameState.generateSuccessor(agentIndex, action),
+                                                 (depth + 1) % gameState.getNumAgents(), depth+1, alpha, beta))
+            bestAction = max(bestAction, succAction, key=lambda x: x[1])
+
+            # Cat tia alpha beta
+            if bestAction[1] > beta:
+                return bestAction
+            else:
+                alpha = max(alpha, bestAction[1])
+
+        return bestAction
+
+    def minval(self, gameState, agentIndex, depth, alpha, beta):
+        bestAction = ("min", float("inf"))
+        for action in gameState.getLegalActions(agentIndex):
+            succAction = (action, self.alphabeta(gameState.generateSuccessor(agentIndex, action),
+                                                 (depth + 1) % gameState.getNumAgents(), depth+1, alpha, beta))
+            bestAction = min(bestAction, succAction, key=lambda x: x[1])
+
+            # Cat tia alpha beta
+            if bestAction[1] < alpha:
+                return bestAction
+            else:
+                beta = min(beta, bestAction[1])
+
+        return bestAction
         util.raiseNotDefined()
 
 
