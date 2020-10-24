@@ -40,3 +40,11 @@ function minimax(node, depth, maximizingPlayer) is
   - Hàm maxval viết cho pacmac trả về action có giá trị hàm evaluation lớn nhất
   - Hàm min viết cho ghost trả về action có giá trị hàm evaluation nhỏ nhất
   - Tại hàm getAction ta sẽ chạy hàm maxval cho pacmac .
+
+### Question 3 (5 points): Alpha-Beta Pruning
+
+- Tương tự câu 2 nhưng sử dụng thuật toán cắt tỉa alpha, beta để làm.
+
+### Question 4 (5 points): Expectimax
+
+### Question 5 (6 points): Evaluation Function
