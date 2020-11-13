@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -16,6 +16,7 @@
 import util
 PRINT = True
 
+
 class MiraClassifier:
     """
     Mira classifier.
@@ -23,7 +24,8 @@ class MiraClassifier:
     Note that the variable 'datum' in this code refers to a counter of features
     (not to a raw samples.Datum).
     """
-    def __init__( self, legalLabels, max_iterations):
+
+    def __init__(self, legalLabels, max_iterations):
         self.legalLabels = legalLabels
         self.type = "mira"
         self.automaticTuning = False
@@ -36,12 +38,14 @@ class MiraClassifier:
         "Resets the weights of each label to zero vectors"
         self.weights = {}
         for label in self.legalLabels:
-            self.weights[label] = util.Counter() # this is the data-structure you should use
+            # this is the data-structure you should use
+            self.weights[label] = util.Counter()
 
     def train(self, trainingData, trainingLabels, validationData, validationLabels):
         "Outside shell to call your method. Do not modify this method."
 
-        self.features = trainingData[0].keys() # this could be useful for your code later...
+        # this could be useful for your code later...
+        self.features = trainingData[0].keys()
 
         if (self.automaticTuning):
             Cgrid = [0.002, 0.004, 0.008]
@@ -61,9 +65,47 @@ class MiraClassifier:
         representing a vector of values.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # util.raiseNotDefined()
+        bestWeights = {}
+        bestAccuracy = None
+        for c in Cgrid:
+            weights = self.weights.copy()
+            for n in range(self.max_iterations):
+                for i, datum in enumerate(trainingData):
+                    # Try to guess the label
+                    bestScore = None
+                    bestY = None
+                    for y in self.legalLabels:
+                        score = datum * weights[y]
+                        if score > bestScore or bestScore is None:
+                            bestScore = score
+                            bestY = y
 
-    def classify(self, data ):
+                    actualY = trainingLabels[i]
+                    if bestY != actualY:
+                        # Wrong guess, update weights
+                        f = datum.copy()
+                        tau = min(
+                            c, ((weights[bestY] - weights[actualY]) * f + 1.0) / (2.0 * (f * f)))
+                        f.divideAll(1.0 / tau)
+
+                        weights[actualY] = weights[actualY] + f
+                        weights[bestY] = weights[bestY] - f
+
+            # Check the accuracy associated with this c
+            correct = 0
+            guesses = self.classify(validationData)
+            for i, guess in enumerate(guesses):
+                correct += (validationLabels[i] == guess and 1.0 or 0.0)
+            accuracy = correct / len(guesses)
+
+            if accuracy > bestAccuracy or bestAccuracy is None:
+                bestAccuracy = accuracy
+                bestWeights = weights
+
+        self.weights = bestWeights
+
+    def classify(self, data):
         """
         Classifies each datum as the label that most closely matches the prototype vector
         for that label.  See the project description for details.
@@ -77,5 +119,3 @@ class MiraClassifier:
                 vectors[l] = self.weights[l] * datum
             guesses.append(vectors.argMax())
         return guesses
-
-
