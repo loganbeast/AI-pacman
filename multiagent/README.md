@@ -43,8 +43,13 @@ function minimax(node, depth, maximizingPlayer) is
 
 ### Question 3 (5 points): Alpha-Beta Pruning
 
-- Tương tự câu 2 nhưng sử dụng thuật toán cắt tỉa alpha, beta để làm.
+- Tương tự câu 2 nhưng sử dụng thuật toán các tham số alpha, beta để tăng hiệu suất cho Pacman => giảm số lần phải gọi đệ quy ở các nhánh k cần thiết đi qua.
 
 ### Question 4 (5 points): Expectimax
 
+- Trong Expectimax Agent sẽ giả định là các tác tử Ma không phải lúc nào cũng chọn lựa chọn tốt nhất để gây bất lợi cho Pacman. Cách cài đặt sẽ hơi khác so với getAction() của Minimax 1 chút tuy nhiên hàm maxvalue() vẫn giữ nguyên. Hàm minvalue() sẽ đổi tên thành expvalue(). Giá trị trả về của những lần đệ quy hàm expectimax() là giá trị trung bình (tổng giá trị trả về của các hàm / số action của Ghost).
+
 ### Question 5 (6 points): Evaluation Function
+
+- Hàm betterEvaluationFunction()): Kế thừa các thiết kế của hàm evaluationFunction() ở câu 1. Bên cạnh đó sẽ có thêm yếu tố
+  capsLeft = len(currentGameState.getCapsules()) là "thức ăn đặc biệt" mà Pacman ăn vào thì sẽ làm cho Ghost sợ và có thể bị tiêu diệt.
