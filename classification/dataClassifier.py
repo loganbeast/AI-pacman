@@ -81,65 +81,35 @@ def enhancedFeatureExtractorDigit(datum):
 
     "*** YOUR CODE HERE ***"
     # util.raiseNotDefined()breaks = 0
-    pixels = datum.getPixels()
-    i = 0
-    nonzero = 0
-    firstLeft = None
-    aboveCenter = 0
-    while i < len(pixels):
-        row = pixels[i]
-        active = False
-        j = 1
-        while j < len(row):
-            if row[j] != 0:
-                nonzero += 1
-                if not firstLeft or j < firstLeft:
-                    firstLeft = j
-                if j <= (len(pixels) + 1) / 2:
-                    aboveCenter += 1
-            if row[j] != row[j - 1]:
-                breaks += 1
-            j += 1
-        i += 1
+    height = range(DIGIT_DATUM_HEIGHT)
+    width = range(DIGIT_DATUM_WIDTH)
 
-    width = len(pixels[0]) - (firstLeft * 2)
-    j = 0
-    firstTop = None
-    pastRight = 0
-    while j < len(pixels[0]):
-        active = False
-        col = [p[j] for p in pixels]
-        i = 1
-        while i < len(col):
-            if col[j] != 0:
-                nonzero += 1
-                if not firstTop or i < firstTop:
-                    firstTop = i
-                if i <= (len(pixels[0]) + 1) / 2:
-                    pastRight += 1
-            if col[i] != row[i - 1]:
-                breaks += 1
-            i += 1
-        j += 1
+    counter = 0
+    for i in height:
+        feature1 = feature2 = feature3 = feature4 = 0
 
-    height = len(pixels) - (firstTop * 2)
-    aspectRatio = float(width) / height
-    for n in range(5):
-        features[n] = breaks > 175 and 1.0 or 0.0
+        for j in width:
+            counter = counter + 1
+            features[(i, j)] = datum.getPixel(i, j)
 
-    for n in range(10):
-        features[(n + 1) * 10] = aspectRatio < 0.69
+            if feature2 == 0 and features[(i, j)] > 0:
+                feature2 = 1
 
-    for n in range(5):
-        features[-n] = nonzero > 300 and 1.0 or 0.0
+            if feature2 == 1 and features[(i, j)] <= 0:
+                feature3 = 1
 
-    percentAbove = float(aboveCenter) / nonzero
-    for n in range(5):
-        features[-(n + 1) * 10] = percentAbove > 0.35 and 1.0 or 0.0
+            if feature2 == 1 and feature3 == 1 and features[(i, j)] > 0:
+                feature4 = 1
 
-    percentRight = float(pastRight) / nonzero
-    for n in range(1000, 1005):
-        features[n] = percentRight < 0.27 and 1.0 or 0.0
+            if feature3 == 1 and feature4 == 1 and feature2 == 1 and features[(i, j)] == 0:
+                feature1 = feature1 + 1
+                feature2 = feature3 = feature4 = 0
+
+            if feature1 <= 0:
+                features[counter] = features[(i, j)]
+            else:
+                features[counter] = 1
+
     return features
 
 
@@ -186,7 +156,47 @@ def enhancedPacmanFeatures(state, action):
     """
     features = util.Counter()
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    # util.raiseNotDefined()
+    features["willDieNextTurn"] = 0
+    features["nearestGhost"] = 50
+    features["nearestFood"] = 50
+    features["score"] = 0
+    features["scaredtimers"] = 0
+
+    def manhattanDistance(xy1, xy2):
+        return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+
+    suc = state.generateSuccessor(0, action)
+    # tim vi tri moi cua pacman
+    nextMan = suc.getPacmanPosition()
+
+    features["score"] = suc.getScore()
+
+    for p in suc.getGhostPositions():
+        if(p == nextMan):
+            features["willDieNextTurn"] = 100
+
+        # tim khoang cach gan nhat den ghost cua pacman
+        gdist = manhattanDistance(nextMan, p)
+        if(gdist < features["nearestGhost"]):
+            features["nearestGhost"] = gdist
+
+    # tim thoi gian bi scrared cua ghost
+    for g in suc.getGhostStates():
+        features["scaredtimers"] += g.scaredTimer
+
+    # lay thuc an
+    sucFoodGrid = suc.getFood()
+
+    # tim thuc an gan nhat
+    rlist = sucFoodGrid.asList()
+    for r in rlist:
+        if(sucFoodGrid[r[0]][r[1]]):
+            mand = manhattanDistance(nextMan, r)
+            if(mand < features["nearestFood"]):
+                features["nearestFood"] = mand
+    # tra ve features
+
     return features
 
 

@@ -58,28 +58,25 @@ class PerceptronClassifier:
             print "Starting iteration ", iteration, "..."
             for i in range(len(trainingData)):
                 "*** YOUR CODE HERE ***"
-                # y_value = self.classify([trainingData[i]])[0]
-
-                # if y_value != trainingLabels[i]:
-                #     self.weights[trainingLabels[i]] += trainingData[i]
-                #     self.weights[y_value] -= trainingData[i]
-                # util.raiseNotDefined()
 
                 # Find the best label for each datum
-                bestScore = None
-                bestY = None
-                datum = trainingData[i]
-                for y in self.legalLabels:
-                    score = datum * self.weights[y]
-                    if score > bestScore or bestScore is None:
-                        bestScore = score
-                        bestY = y
+                label_max = []
+                # xac dinh score cua tung label
+                for j in self.legalLabels:
+                    import util
+                    label_max.append(self.weights[j]*trainingData[i])
+                # lay ra label tot nhat
+                label_final = max(label_max)
+                indexvalue = label_max.index(label_final)
 
-                actualY = trainingLabels[i]
-                if bestY != actualY:
-                    # Wrong guess, update weights
-                    self.weights[actualY] = self.weights[actualY] + datum
-                    self.weights[bestY] = self.weights[bestY] - datum
+                # neu du doan sai thi dieu chinh lai trong so
+
+                if(label_final != trainingLabels[i]):
+
+                    self.weights[indexvalue] = self.weights[indexvalue] - \
+                        trainingData[i]
+                    self.weights[trainingLabels[i]
+                                 ] = self.weights[trainingLabels[i]]+trainingData[i]
 
     def classify(self, data):
         """
@@ -100,9 +97,9 @@ class PerceptronClassifier:
         """
         Returns a list of the 100 features with the greatest weight for some label
         """
-        featuresWeights = []
 
         "*** YOUR CODE HERE ***"
-        featuresWeights = self.weights[label].sortedKeys()[:100]
+        for keys in range(100):
+            featuresWeights.append(self.weights[label].sortedKeys()[keys])
 
         return featuresWeights
